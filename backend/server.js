@@ -8,7 +8,7 @@ const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
-const connectDB = require('./config/db.js');
+const connectDB = require('./config/db');
 
 
 
