@@ -13,7 +13,15 @@ const connectDB = require('./config/db');
 
 
 // ── Route imports ─────────────────────────────────────────────────────────────
-
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+const messageRoutes = require('./routes/messages');
+const collaborationRoutes = require('./routes/collaborations');
+const documentRoutes = require('./routes/documents');
+const meetingRoutes = require('./routes/meetings');
+const dealRoutes = require('./routes/deals');
+const paymentRoutes = require('./routes/payments');
+const notificationRoutes = require('./routes/notifications');
 
 // ── Connect Database ──────────────────────────────────────────────────────────
 await connectDB();
@@ -86,7 +94,15 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── API Routes ────────────────────────────────────────────────────────────────
-
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/collaborations', collaborationRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/meetings', meetingRoutes);
+app.use('/api/deals', dealRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use((req, res) => {
