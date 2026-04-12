@@ -1,3 +1,6 @@
+// Add this at the very top of your file
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']); // Use Google and Cloudflare DNS
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -22,9 +25,11 @@ const meetingRoutes = require('./routes/meetings');
 const dealRoutes = require('./routes/deals');
 const paymentRoutes = require('./routes/payments');
 const notificationRoutes = require('./routes/notifications');
+const socketHandler = require('./socket/socketHandler');
+const errorHandler = require('./middleware/errorHandler');
 
 // ── Connect Database ──────────────────────────────────────────────────────────
-await connectDB();
+connectDB();
 
 const app = express();
 const server = http.createServer(app);
