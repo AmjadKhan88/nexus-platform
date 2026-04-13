@@ -16,11 +16,8 @@ exports.uploadDocument = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
 
-    const ext = path.extname(req.file.originalname).toUpperCase().replace('.', '');
-    const typeMap = {
-      PDF: 'PDF', DOCX: 'Document', DOC: 'Document',
-      XLSX: 'Spreadsheet', XLS: 'Spreadsheet', PNG: 'Image', JPG: 'Image', SVG: 'Image',
-    };
+    const url = req.file.path;      // Cloudinary URL
+   const cloudinary_id = req.file.filename; // Public ID for deletion
 
     const document = await Document.create({
       name: req.body.name || req.file.originalname,
@@ -28,7 +25,8 @@ exports.uploadDocument = async (req, res, next) => {
       type: typeMap[ext] || ext,
       size: formatSize(req.file.size),
       mimeType: req.file.mimetype,
-      url: `/uploads/${req.file.filename}`,
+      url,
+      cloudinaryUri:cloudinary_id,
       ownerId: req.user._id,
     });
 

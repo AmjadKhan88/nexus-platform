@@ -8,6 +8,7 @@ const DocumentSchema = new mongoose.Schema(
     size: { type: String, required: true },
     mimeType: { type: String },
     url: { type: String, required: true },
+    cloudinaryUri: {type: String},
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

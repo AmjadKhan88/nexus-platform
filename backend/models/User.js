@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema(
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(this.name)}&background=random`;
       },
     },
+    cloudinaryUri: {
+      type: String,
+      default: ''
+    },
     bio: { type: String, default: '', maxlength: 500 },
     isOnline: { type: Boolean, default: false },
 

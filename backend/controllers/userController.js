@@ -97,10 +97,11 @@ exports.updateAvatar = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
 
-    const avatarUrl = `/uploads/${req.file.filename}`;
+   const url = req.file.path;      // Cloudinary URL
+   const cloudinary_id = req.file.filename; // Public ID for deletion
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { avatarUrl },
+      { avatarUrl: url, cloudinaryUri:cloudinary_id},
       { new: true }
     ).select('-password');
 
