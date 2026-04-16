@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 // @desc    Get all users (with optional role filter)
@@ -91,6 +92,33 @@ exports.updateProfile = async (req, res, next) => {
   }
 };
 
+// @desc change current user's password
+// @route PUT /api/users/change-password
+exports.changePassword = async (req,res,next)=> {
+    try {
+      const userId = req.user._id;
+      const {password,currentPassword} = req.body;
+
+      const user = await User.findById(userId).select('+password');;
+
+
+      const matchPassword = await user.matchPassword(currentPassword);
+
+      if(!matchPassword){
+        return res.status(400).json({success:false,message:'Wrong Password',error:{password:'Invalid password'}});
+      }
+
+      user.password = password;
+
+      user.save();
+
+      res.status(201).json({success:true,message:"Password changed successfully"});
+
+    } catch (error) {
+      next(error);
+    }
+}
+
 // @desc    Update avatar
 // @route   PUT /api/users/avatar
 exports.updateAvatar = async (req, res, next) => {
@@ -105,7 +133,7 @@ exports.updateAvatar = async (req, res, next) => {
       { new: true }
     ).select('-password');
 
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ success: true, avatarUrl: user.avatarUrl });
   } catch (err) {
     next(err);
   }
