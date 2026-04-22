@@ -25,6 +25,7 @@ const meetingRoutes = require('./routes/meetings');
 const dealRoutes = require('./routes/deals');
 const paymentRoutes = require('./routes/payments');
 const notificationRoutes = require('./routes/notifications');
+const callRoutes = require('./routes/calls');
 const socketHandler = require('./socket/socketHandler');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -108,6 +109,7 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/deals', dealRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/calls', callRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use((req, res) => {

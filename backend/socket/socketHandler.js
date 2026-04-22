@@ -103,6 +103,13 @@ const socketHandler = (io) => {
     //  WEBRTC VIDEO/AUDIO SIGNALING
     // ═══════════════════════════════════════════════════════════════════════
 
+    // Join a call room
+    socket.on('call:join', ({ roomId }) => {
+      socket.join(roomId);
+      console.log(`✅ User ${userId} joined room ${roomId}`);
+      io.to(roomId).emit('call:user-joined', { userId, joinedAt: new Date() });
+    });
+
     // Initiate a call
     socket.on('call:initiate', ({ targetUserId, offer, callType }) => {
       const targetSocketId = onlineUsers.get(targetUserId);
@@ -117,6 +124,11 @@ const socketHandler = (io) => {
       });
     });
 
+    // Send offer to remote peer
+    socket.on('call:offer', ({ roomId, offer }) => {
+      socket.to(roomId).emit('call:offer', { offer, from: userId });
+    });
+
     // Answer the call
     socket.on('call:answer', ({ callerId, answer }) => {
       const callerSocketId = onlineUsers.get(callerId);
@@ -125,12 +137,22 @@ const socketHandler = (io) => {
       }
     });
 
+    // Send answer to remote peer
+    socket.on('call:answer', ({ roomId, answer }) => {
+      socket.to(roomId).emit('call:answer', { answer, from: userId });
+    });
+
     // ICE candidate exchange
     socket.on('call:ice-candidate', ({ targetUserId, candidate }) => {
       const targetSocketId = onlineUsers.get(targetUserId);
       if (targetSocketId) {
         io.to(targetSocketId).emit('call:ice-candidate', { candidate, from: userId });
       }
+    });
+
+    // Send ICE candidate to remote peer in room
+    socket.on('call:ice-candidate', ({ roomId, candidate }) => {
+      socket.to(roomId).emit('call:ice-candidate', { candidate, from: userId });
     });
 
     // Reject a call
@@ -142,18 +164,29 @@ const socketHandler = (io) => {
     });
 
     // End a call
-    socket.on('call:end', ({ targetUserId }) => {
-      const targetSocketId = onlineUsers.get(targetUserId);
-      if (targetSocketId) {
-        io.to(targetSocketId).emit('call:ended', { by: userId });
+    socket.on('call:end', ({ targetUserId, roomId }) => {
+      if (targetUserId) {
+        const targetSocketId = onlineUsers.get(targetUserId);
+        if (targetSocketId) {
+          io.to(targetSocketId).emit('call:ended', { by: userId });
+        }
+      }
+      if (roomId) {
+        io.to(roomId).emit('call:ended', { by: userId, endedAt: new Date() });
+        socket.leave(roomId);
       }
     });
 
     // Toggle audio/video mute
-    socket.on('call:toggle-media', ({ targetUserId, audio, video }) => {
-      const targetSocketId = onlineUsers.get(targetUserId);
-      if (targetSocketId) {
-        io.to(targetSocketId).emit('call:media-toggled', { by: userId, audio, video });
+    socket.on('call:toggle-media', ({ targetUserId, roomId, audio, video }) => {
+      if (targetUserId) {
+        const targetSocketId = onlineUsers.get(targetUserId);
+        if (targetSocketId) {
+          io.to(targetSocketId).emit('call:media-toggled', { by: userId, audio, video });
+        }
+      }
+      if (roomId) {
+        socket.to(roomId).emit('call:media-toggled', { by: userId, audio, video });
       }
     });
 

@@ -19,6 +19,16 @@ const MeetingSchema = new mongoose.Schema(
       default: 'pending',
     },
     meetingLink: { type: String, default: '' },
+    // Video call fields
+    hasVideoCall: { type: Boolean, default: false },
+    videoCallRoomId: { type: String, default: '' },
+    videoCallType: {
+      type: String,
+      enum: ['audio', 'video'],
+      default: 'video',
+    },
+    videoCallStartedAt: { type: Date },
+    videoCallEndedAt: { type: Date },
   },
   { timestamps: true }
 );
